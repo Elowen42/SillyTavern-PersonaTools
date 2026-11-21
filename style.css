@@ -25,6 +25,11 @@
     display: none !important;
 }
 
+/* Hidden but still takes up its space (keeps layouts from shifting) */
+.pt-invisible {
+    visibility: hidden !important;
+}
+
 .pt-empty {
     color: var(--pt-muted);
     font-style: italic;
@@ -716,6 +721,42 @@ body.pt-grabbing * {
     outline-offset: 1px;
 }
 
+/* Excluded tag filter: danger outline, struck-through name, dimmed */
+.pt-tag-chip.pt-excluded {
+    outline: 2px solid var(--pt-danger);
+    outline-offset: 1px;
+    opacity: 0.75;
+}
+
+.pt-tag-chip.pt-excluded .pt-tag-chip-name {
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+}
+
+/* Fixed-width slot so ○ / ✓ / ⊘ all take exactly the same space */
+.pt-tag-state {
+    width: 1.25em;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 0.9em;
+    margin-left: -3px;
+}
+
+.pt-tag-state-off {
+    opacity: 0.55;
+}
+
+.pt-tag-state-off::before {
+    content: '';
+    display: inline-block;
+    box-sizing: border-box;
+    width: 0.75em;
+    height: 0.75em;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    vertical-align: -0.05em;
+}
+
 .pt-tag-chip-small {
     padding: 1px 8px;
     font-size: 0.72em;
@@ -821,18 +862,24 @@ body.pt-grabbing * {
    Tag filter bar
    ============================================================ */
 
+/* Fade in when the bar is opened. Deliberately not on the chips: they are
+   re-rendered on every click, and replaying the slide-in each time made the
+   whole chip area jump by a few pixels. */
 .pt-tag-bar {
     display: flex;
     flex-direction: column;
     gap: 6px;
     margin-bottom: 8px;
+    animation: pt-fade-in 0.15s ease;
 }
 
+/* One row, always: the status text truncates instead of wrapping, so the
+   row's height never changes as filters are toggled */
 .pt-tag-bar-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 .pt-tag-bar-toggle {
@@ -873,12 +920,32 @@ body.pt-grabbing * {
     font-weight: 600;
 }
 
+.pt-tag-bar-hint {
+    font-size: 0.75em;
+    color: var(--pt-muted);
+    font-style: italic;
+}
+
+.pt-tag-bar-active,
+.pt-tag-bar-hint {
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .pt-clear-btn {
     display: inline-flex;
     align-items: center;
     gap: 5px;
     font-size: 0.8em;
     color: var(--pt-danger) !important;
+}
+
+.pt-tag-bar-header .pt-clear-btn {
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .pt-tag-bar-search {
@@ -890,7 +957,6 @@ body.pt-grabbing * {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    animation: pt-fade-in 0.15s ease;
 }
 
 /* ============================================================
@@ -1157,6 +1223,7 @@ body.rounded-avatars .pt-member-thumb {
     .pt-tooltip,
     .pt-folder-card,
     .pt-folder-header,
+    .pt-tag-bar,
     .pt-tag-chip,
     .pt-back-btn,
     .pt-quick-img,
